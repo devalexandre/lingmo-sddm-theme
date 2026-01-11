@@ -7,18 +7,18 @@
  * SPDX-License-Identifier: GPL-3.0
  */
 import QtQuick
-import QtQuick.Controls
+import QtQuick.Controls as QQC2
 import Qt5Compat.GraphicalEffects
 import SddmComponents
 
-import QtQuick.Controls.LingmoStyle
 import LingmoUI.CompatibleModule 3.0 as LingmoUI
 
-ToolButton {
+QQC2.ToolButton {
     id: root
 
     property int currentIndex: -1
     property int rootFontSize
+    property color textColor: LingmoUI.Theme.textColor
 
     visible: menu.count > 1
     implicitHeight: _currentLabel.implicitHeight + 10
@@ -29,38 +29,33 @@ ToolButton {
 
     icon.width: 20
     icon.height: 20
-    icon.color: Color.transparent(root.textColor, enabled ? 1.0 : 0.2)
+    icon.color: Qt.rgba(textColor.r, textColor.g, textColor.b, enabled ? 1.0 : 0.2)
 
-    contentItem: IconLabel {
+    contentItem: Row {
         id: _currentLabel
         anchors.centerIn: parent
         spacing: root.spacing
-        mirrored: root.mirrored
-        display: root.display
 
-        icon: root.icon
-        text: {
-            instantiator.objectAt(currentIndex).text || ""
+        Image {
+            width: root.icon.width
+            height: root.icon.height
+            source: root.icon.source
+            visible: source !== ""
+            smooth: true
         }
-        font: root.font
-        color: root.textColor
+
+        QQC2.Label {
+            text: instantiator.objectAt(currentIndex)?.text || ""
+            font: root.font
+            color: root.textColor
+        }
     }
 
-    background: LingmoControlBackground {
+    background: Rectangle {
         implicitWidth: 30
         implicitHeight: 30
-        radius: LingmoUnits.smallRadius
-        color: {
-            if (!enabled) {
-                return disableColor
-            }
-            return hovered ? hoverColor : normalColor
-        }
-        shadow: !pressed && enabled
-        LingmoFocusRectangle {
-            visible: root.activeFocus
-            radius: LingmoUnits.smallRadius
-        }
+        radius: height / 2
+        color: root.hovered ? Qt.rgba(0, 0, 0, 0.12) : Qt.rgba(0, 0, 0, 0.08)
     }
 
     DropShadow {
@@ -70,7 +65,7 @@ ToolButton {
         z: -1
         horizontalOffset: 1
         verticalOffset: 1
-        radius: LingmoUnits.smallRadius
+        radius: 6
         samples: radius * 4
         spread: 0.35
         color: Qt.rgba(0, 0, 0, 0.2)
@@ -78,20 +73,20 @@ ToolButton {
         visible: true
     }
 
-    onClicked: menu.open()
+    onClicked: menu.popup()
 
     Component.onCompleted: {
         currentIndex = sessionModel.lastIndex
     }
 
-    LingmoMenu {
+    QQC2.Menu {
         id: menu
         Instantiator {
             id: instantiator
             model: sessionModel
             onObjectAdded: (index, object) => menu.insertItem(index, object)
             onObjectRemoved: (index, object) => menu.removeItem(object)
-            delegate: LingmoMenuItem {
+            delegate: QQC2.MenuItem {
                 text: model.name
                 onTriggered: {
                     root.currentIndex = model.index
