@@ -243,15 +243,20 @@ Item {
         width: 50
         height: 40 + LingmoUI.Units.largeSpacing
 
-        LingmoIconButton {
-            width: 50
-            height: 40 + LingmoUI.Units.largeSpacing
+        QQC2.Button {
             anchors.fill: parent
-            iconSource: LingmoIcons.PowerButton
-            iconSize: 30
             display: QQC2.Button.IconOnly
+            icon.source: "./system-shutdown-symbolic.svg"
+            icon.width: 30
+            icon.height: 30
 
-            onClicked: {actionMenu.popup()}
+            background: Rectangle {
+                color: LingmoUI.Theme.darkMode ? "#B6B6B6" : "white"
+                opacity: control.pressed ? 0.3 : control.hovered ? 0.4 : 0.5
+                radius: LingmoUI.Theme.bigRadius
+            }
+
+            onClicked: actionMenu.popup()
         }
 
         // LingmoUI.RoundImageButton {
