@@ -23,8 +23,6 @@ import QtQuick.Controls as QQC2
 import QtQuick.Layouts
 import Qt5Compat.GraphicalEffects
 
-import Lingmo.Accounts as Accounts
-import Lingmo.System as System
 import LingmoUI.CompatibleModule 3.0 as LingmoUI
 
 ListView {
