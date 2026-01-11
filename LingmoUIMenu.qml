@@ -21,7 +21,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Templates as T
 import QtQuick.Window
-import LingmoUI.CompatibleModule as LingmoUI
+import LingmoUI.CompatibleModule 3.0 as LingmoUI
 import Qt5Compat.GraphicalEffects
 import "./"
 

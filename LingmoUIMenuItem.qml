@@ -22,7 +22,7 @@ import QtQuick.Templates as T
 import QtQuick.Controls
 import QtQuick.Controls.impl
 
-import LingmoUI.CompatibleModule as LingmoUI
+import LingmoUI.CompatibleModule 3.0 as LingmoUI
 
 T.MenuItem
 {

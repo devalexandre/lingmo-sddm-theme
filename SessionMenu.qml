@@ -12,7 +12,7 @@ import Qt5Compat.GraphicalEffects
 import SddmComponents
 
 import QtQuick.Controls.LingmoStyle
-import LingmoUI
+import LingmoUI.CompatibleModule 3.0 as LingmoUI
 
 ToolButton {
     id: root
