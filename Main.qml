@@ -42,8 +42,8 @@ Item {
     Image {
         id: wallpaperImage
         anchors.fill: parent
-        // TODO: dynamically change to wallpaper for user
-        source: "file://" + "/usr/share/backgrounds/lingmoos/default.jpg"
+        // "background" in theme.conf; override it in theme.conf.user
+        source: "file://" + (config.background || "/usr/share/backgrounds/lingmoos/default.jpg")
         sourceSize: Qt.size(width * Screen.devicePixelRatio,
                             height * Screen.devicePixelRatio)
         fillMode: Image.PreserveAspectCrop
