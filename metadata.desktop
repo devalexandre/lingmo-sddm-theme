@@ -59,6 +59,7 @@ Website=https://github.com/LingmoOS/lingmo-sddm-theme
 Screenshot=screenshot.png
 MainScript=Main.qml
 ConfigFile=theme.conf
+TranslationsDirectory=translations
 Theme-Id=Lingmo
 Theme-API=2.0
 QtVersion=6
