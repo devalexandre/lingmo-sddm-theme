@@ -23,6 +23,7 @@ import QtQuick.Window
 import QtQuick.Controls as QQC2
 import QtQuick.Layouts 
 import Qt5Compat.GraphicalEffects
+import Qt.labs.folderlistmodel
 
 import LingmoUI.CompatibleModule 3.0 as LingmoUI
 
@@ -33,6 +34,19 @@ Item {
     id: root
 
     property string notificationMessage
+
+    // lingmo-settings' fingerprint-pam helper creates /etc/lingmo-fingerprint-enabled
+    // when pam_fprintd is first in /etc/pam.d/sddm. PAM only runs after login(),
+    // so the finger works once Enter is pressed (with or without a password).
+    property bool fingerprintEnabled: fingerprintMarker.count > 0
+
+    FolderListModel {
+        id: fingerprintMarker
+        folder: "file:///etc"
+        nameFilters: ["lingmo-fingerprint-enabled"]
+        showDirs: false
+        showDotAndDotDot: false
+    }
 
     LayoutMirroring.enabled: Qt.locale().textDirection == Qt.RightToLeft
     LayoutMirroring.childrenInherit: true
@@ -213,6 +227,15 @@ Item {
                     radius: LingmoUI.Theme.bigRadius
                 }
             }
+
+            QQC2.Label {
+                visible: root.fingerprintEnabled
+                text: qsTr("Press Enter and touch the fingerprint reader, or type your password")
+                wrapMode: Text.WordWrap
+                horizontalAlignment: Text.AlignHCenter
+                Layout.alignment: Qt.AlignHCenter
+                Layout.preferredWidth: 260
+            }
         }
     }
 
@@ -333,7 +356,9 @@ Item {
     function startLogin() {
         var username = _userView.currentItem.userName
         var password = passwordField.text
-        root.notificationMessage = ""
+        // pam_fprintd waits for the finger before the password is checked
+        root.notificationMessage = root.fingerprintEnabled ? qsTr("Touch the fingerprint reader") : ""
+        notificationResetTimer.stop()
         sddm.login(username, password, sessionMenu.currentIndex)
     }
 
@@ -349,6 +374,12 @@ Item {
         function onLoginFailed() {
             notificationMessage = textConstants.loginFailed
             notificationResetTimer.start();
+        }
+
+        // PAM messages, e.g. pam_fprintd's "Failed to match fingerprint"
+        function onInformationMessage(message) {
+            notificationMessage = message
+            notificationResetTimer.stop()
         }
     }
 }
