@@ -19,7 +19,7 @@
         <translation>Pressione Enter e toque no leitor de digital, ou digite a senha</translation>
     </message>
     <message>
-        <location line="+72"/>
+        <location line="+73"/>
         <source>Suspend</source>
         <translation>Suspender</translation>
     </message>

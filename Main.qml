@@ -267,6 +267,7 @@ Item {
         height: 40 + LingmoUI.Units.largeSpacing
 
         QQC2.Button {
+            id: powerButton
             anchors.fill: parent
             display: QQC2.Button.IconOnly
             icon.source: "./system-shutdown-symbolic.svg"
@@ -275,7 +276,7 @@ Item {
 
             background: Rectangle {
                 color: LingmoUI.Theme.darkMode ? "#B6B6B6" : "white"
-                opacity: control.pressed ? 0.3 : control.hovered ? 0.4 : 0.5
+                opacity: powerButton.pressed ? 0.3 : powerButton.hovered ? 0.4 : 0.5
                 radius: LingmoUI.Theme.bigRadius
             }
 
