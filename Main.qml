@@ -48,6 +48,19 @@ Item {
         showDotAndDotDot: false
     }
 
+    // lingmo-settings' face-pam helper creates /etc/lingmo-face-enabled when
+    // lingmo-faceauth is first in /etc/pam.d/sddm. It looks at the camera only
+    // when Enter is pressed with an empty password; a typed password skips it.
+    property bool faceEnabled: faceMarker.count > 0
+
+    FolderListModel {
+        id: faceMarker
+        folder: "file:///etc"
+        nameFilters: ["lingmo-face-enabled"]
+        showDirs: false
+        showDotAndDotDot: false
+    }
+
     LayoutMirroring.enabled: Qt.locale().textDirection == Qt.RightToLeft
     LayoutMirroring.childrenInherit: true
 
@@ -229,8 +242,11 @@ Item {
             }
 
             QQC2.Label {
-                visible: root.fingerprintEnabled
-                text: qsTr("Press Enter and touch the fingerprint reader, or type your password")
+                visible: root.fingerprintEnabled || root.faceEnabled
+                text: root.faceEnabled && root.fingerprintEnabled
+                      ? qsTr("Press Enter and look at the camera or touch the fingerprint reader, or type your password")
+                      : root.faceEnabled ? qsTr("Press Enter and look at the camera, or type your password")
+                      : qsTr("Press Enter and touch the fingerprint reader, or type your password")
                 wrapMode: Text.WordWrap
                 horizontalAlignment: Text.AlignHCenter
                 Layout.alignment: Qt.AlignHCenter
@@ -357,8 +373,10 @@ Item {
     function startLogin() {
         var username = _userView.currentItem.userName
         var password = passwordField.text
-        // pam_fprintd waits for the finger before the password is checked
-        root.notificationMessage = root.fingerprintEnabled ? qsTr("Touch the fingerprint reader") : ""
+        // Without a password the camera looks first; pam_fprintd waits for the
+        // finger before the password is checked
+        root.notificationMessage = root.faceEnabled && password === "" ? qsTr("Look at the camera")
+                                 : root.fingerprintEnabled ? qsTr("Touch the fingerprint reader") : ""
         notificationResetTimer.stop()
         sddm.login(username, password, sessionMenu.currentIndex)
     }
@@ -377,7 +395,8 @@ Item {
             notificationResetTimer.start();
         }
 
-        // PAM messages, e.g. pam_fprintd's "Failed to match fingerprint"
+        // PAM messages, e.g. pam_fprintd's "Failed to match fingerprint" or
+        // lingmo-faceauth's "Face not recognized. Type your password."
         function onInformationMessage(message) {
             notificationMessage = message
             notificationResetTimer.stop()
